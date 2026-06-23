@@ -75,13 +75,13 @@ describe('TeacherindexComponent Integration Tests', () => {
 
   // Test 3: Aldin Memic
   it('[Aldin Memic] should show alert and not call updateTeacher service when name or email is empty during save', () => {
-    const windowAlertSpy = jest.spyOn(window, 'alert').mockImplementation(() => {});
-    
+    const windowAlertSpy = jest.spyOn(window, 'alert').mockImplementation(() => { });
+
     fixture.detectChanges(); // init
-    
+
     component.selectedTeacher = { id: 1, name: 'Old Name', email: 'old@school.com' };
     component.openUpdateDialog(component.selectedTeacher);
-    
+
     // Set invalid form values
     component.teacherForm.setValue({
       name: '',
