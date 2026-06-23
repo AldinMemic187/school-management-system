@@ -37,9 +37,38 @@ Jeder der beiden Projektteilnehmer (**Aldin Memic** und **Ljundrim Ganiji**) dec
 * **Test Isolation**:
   * **Unit/Integration**: Jede Testklasse mockt ihre HTTP-Abhängigkeiten mithilfe des `HttpClientTestingModule` (oder Spies auf Service-Ebene). Auf Komponentenebene wird `NO_ERRORS_SCHEMA` genutzt, um UI-Abhängigkeiten (z.B. PrimeNG) zu isolieren.
   * **System/E2E**: Um die Tests unabhängig von der Backend-Datenbank zu halten, werden API-Anfragen im E2E-Test per Playwright (`page.route()`) abgefangen und mit definierten JSON-Mocks beantwortet.
-* **CI/CD Integration**:
-  * Die Tests sind so konzipiert, dass sie lokal und auf GitHub Actions (CI) ausgeführt werden können.
   * In der Pipeline wird der Webserver über Playwrights `webServer`-Konfiguration gestartet und nach den Tests automatisch heruntergefahren.
+
+## 3.5 Lokale Testausführung
+Um die verschiedenen Testarten lokal auszuführen, können die folgenden Befehle im jeweiligen Verzeichnis verwendet werden:
+
+### 1. Unit- & Integrationstests (Jest)
+Führen Sie die Tests im `frontend`-Verzeichnis aus:
+```bash
+cd frontend
+npm run test
+```
+
+### 2. System- / E2E-Tests (Playwright)
+Führen Sie die Tests im `frontend`-Verzeichnis aus:
+```bash
+cd frontend
+npm run e2e
+```
+Oder starten Sie das interaktive Playwright-UI-Dashboard mit:
+```bash
+npx playwright test --ui
+```
+
+### 3. Lasttests (k6)
+Führen Sie die k6-Skripte im Hauptverzeichnis des Projekts aus (mit dem Flag `--insecure-skip-tls-verify`, um lokale HTTPS-Zertifikatswarnungen zu umgehen):
+```bash
+# Courses Load Test (Aldin Memic)
+k6 run --insecure-skip-tls-verify load-tests/courses-load-test.js
+
+# Exam Spike Test (Ljundrim Ganiji)
+k6 run --insecure-skip-tls-verify load-tests/exam-spike-test.js
+```
 
 ---
 
