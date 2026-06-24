@@ -22,9 +22,9 @@ export default function () {
       'Content-Type': 'application/json',
     },
   };
-  
+
   const res = http.get(url, params);
-  
+
   check(res, {
     'status is 200': (r) => r.status === 200,
     'body is not empty': (r) => r.body && r.body.length > 0,
