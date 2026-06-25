@@ -34,10 +34,23 @@ Jeder der beiden Projektteilnehmer (**Aldin Memic** und **Ljundrim Ganiji**) dec
 ---
 
 ## 3. Test Isolation & CI/CD Pipeline
-* **Test Isolation**:
-  * **Unit/Integration**: Jede Testklasse mockt ihre HTTP-Abhängigkeiten mithilfe des `HttpClientTestingModule` (oder Spies auf Service-Ebene). Auf Komponentenebene wird `NO_ERRORS_SCHEMA` genutzt, um UI-Abhängigkeiten (z.B. PrimeNG) zu isolieren.
-  * **System/E2E**: Um die Tests unabhängig von der Backend-Datenbank zu halten, werden API-Anfragen im E2E-Test per Playwright (`page.route()`) abgefangen und mit definierten JSON-Mocks beantwortet.
-  * In der Pipeline wird der Webserver über Playwrights `webServer`-Konfiguration gestartet und nach den Tests automatisch heruntergefahren.
+
+### Test Isolation
+* **Unit/Integration**: Jede Testklasse mockt ihre HTTP-Abhängigkeiten mithilfe des `HttpClientTestingModule` (oder Spies auf Service-Ebene). Auf Komponentenebene wird `NO_ERRORS_SCHEMA` genutzt, um UI-Abhängigkeiten (z.B. PrimeNG) zu isolieren.
+* **System/E2E**: Um die Tests unabhängig von der Backend-Datenbank zu halten, werden API-Anfragen im E2E-Test per Playwright (`page.route()`) abgefangen und mit definierten JSON-Mocks beantwortet.
+* **Webserver in Tests**: Über Playwrights `webServer`-Konfiguration in `playwright.config.ts` wird das Frontend lokal per `npm run start` hochgefahren, um die E2E-Tests dagegen laufen zu lassen. Nach den Tests wird der Server automatisch heruntergefahren.
+
+### CI/CD Pipeline (GitHub Actions)
+Für das Frontend wurde eine automatisierte Pipeline unter [frontend-ci.yml](file:///.github/workflows/frontend-ci.yml) eingerichtet. Sie läuft bei jedem Push oder Pull Request auf dem `main`-Branch (sofern Änderungen am Frontend oder am Workflow-Skript selbst vorliegen).
+
+**Pipeline-Schritte:**
+1. **Checkout**: Das Repository wird auf den virtuellen Runner geladen.
+2. **Setup Node.js**: Node.js (Version 20) wird eingerichtet. Ein NPM-Cache sorgt für schnellere Folge-Builds.
+3. **Install Dependencies**: Dependencies werden sauber über `npm ci` installiert.
+4. **Unit Tests**: Alle Jest-Unit- und Integrationstests (`npm run test`) werden ausgeführt.
+5. **Build**: Das Angular-Projekt wird über `npm run build` kompiliert. Um Build-Fehler durch Überschreitungen der Standard-Styling-Budgets zu verhindern, wurden die Budgets (`anyComponentStyle`) in [angular.json](file:///frontend/angular.json) zuvor auf max. 40 KB angehoben.
+6. **E2E Tests**: Die Playwright-Browserabhängigkeiten (Chromium) werden geladen und die E2E-Tests (`npm run e2e`) werden ausgeführt.
+7. **Report Artifact**: Falls die E2E-Tests fehlschlagen, wird der Playwright-HTML-Report automatisch als Build-Artefakt hochgeladen, um das Debugging zu erleichtern.
 
 ## 3.5 Lokale Testausführung
 Um die verschiedenen Testarten lokal auszuführen, können die folgenden Befehle im jeweiligen Verzeichnis verwendet werden:
