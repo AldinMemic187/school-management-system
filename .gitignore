@@ -425,3 +425,8 @@ FodyWeavers.xsd
 
 # Angular
 .angular/
+
+# Playwright
+playwright-report/
+test-results/
+junit.xml
